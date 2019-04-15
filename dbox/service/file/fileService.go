@@ -52,10 +52,15 @@ func UploadLocalFile(file, category string) error {
 
 	category = strings.TrimSpace(category)
 	if category == "" {
+		Log.Warn("category is blank, will use default")
 		category = model.CatetoryRoot
 	}
 
 	c := categoryDao.Save(session, category)
+	existFile := fileDao.FindByMD5(session, md5Sum)
+	if existFile != nil {
+		return ex.FileExistErr.Arg(", file:", file)
+	}
 	fileDao.Save(session, &model.File{Name: file, CategoryID: c.ID, MD5: md5Sum, Path: category})
 
 	return cloudService.Upload(file, category)

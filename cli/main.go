@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/sdvdxl/dbox/dbox/config"
 	"github.com/sdvdxl/dbox/dbox/dao"
 	"github.com/sdvdxl/dbox/dbox/ex"
@@ -34,8 +33,10 @@ func main() {
 		Log.Error("oss config error", err)
 		os.Exit(-1)
 	}
-	upLoad("测试")
+	upLoad("测试 as")
 	Log.Info("FindByCategory 1", FindByCategory(1))
+
+	FindAllCategory()
 }
 
 func FindByCategory(categoryID uint) []model.File {
@@ -43,6 +44,7 @@ func FindByCategory(categoryID uint) []model.File {
 }
 
 func FindAllCategory() {
+	Log.Info("FindAllCategory")
 	for _, v := range categoryService.FindAll() {
 		fmt.Println(v)
 	}

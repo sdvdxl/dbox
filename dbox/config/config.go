@@ -10,6 +10,7 @@ import (
 var Cfg *Config
 
 func Parse(configFile string) error {
+	viper.SetConfigType("yaml")
 	viper.SetConfigFile(configFile)
 	if err := viper.ReadInConfig(); err != nil {
 		return err

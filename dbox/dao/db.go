@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/sdvdxl/dbox/dbox/ex"
@@ -43,7 +42,7 @@ func Init() {
 
 	initSchemas()
 
-	fmt.Println(dbDialect, "db init success")
+	log.Log.Info(dbDialect, "db init success")
 
 }
 
@@ -71,4 +70,5 @@ func Transaction(session *gorm.DB) {
 	}
 
 	ex.Check(session.Commit().Error)
+	log.Log.Debug("commit success")
 }
