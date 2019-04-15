@@ -1,0 +1,14 @@
+# 更改文件名为 cfg.yml
+# 阿里云OSS配置
+cloud:
+  #  use: "aliOss"
+  aliOss:
+    endpoint: ""
+    accessKeyID: ""
+    accessKeySecret: ""
+    bucket: ""
+
+# 索引数据库文件位置
+metaDB: "/data/dbox/meta.db"
+# 默认文件夹
+defaultFoler: "默认"
