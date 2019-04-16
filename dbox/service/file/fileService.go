@@ -33,7 +33,7 @@ func UploadLocalFile(file, category string) error {
 	Log.Infow("upload file info", "file", file, "category", category)
 	stat, err := os.Stat(file)
 	if err != nil {
-		return ex.FileNotExistErr.Arg(file)
+		return ex.FileNotExistErr.Arg(", file:", file)
 	}
 
 	if stat.IsDir() {

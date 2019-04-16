@@ -18,7 +18,7 @@ func (e FileExist) MarshalJSON() ([]byte, error) {
 }
 
 func (e FileExist) Arg(args ...interface{}) error {
-	e.desc = addDesc(e.desc+", file: ", args...)
+	e.desc = addDesc(e.desc, args...)
 	return e
 }
 

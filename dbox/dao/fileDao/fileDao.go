@@ -18,7 +18,7 @@ func FindByCategoryID(session *gorm.DB, categoryID uint) []model.File {
 
 func FindByMD5(session *gorm.DB, md5 string) *model.File {
 	var file model.File
-	err := session.Where(map[string]string{"md5": md5}).Find(&file).Error
+	err := session.Where(map[string]interface{}{"md5": md5}).Find(&file).Error
 	if err != gorm.ErrRecordNotFound {
 		ex.Check(err)
 	}
