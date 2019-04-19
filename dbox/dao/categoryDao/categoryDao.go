@@ -19,3 +19,9 @@ func FindAll() []model.Category {
 	return models
 
 }
+
+func CreateCategory(session *gorm.DB, name string) *model.Category {
+	c := &model.Category{Name: name}
+	ex.Check(session.Where(map[string]interface{}{"name": name}).FirstOrCreate(c).Error)
+	return c
+}

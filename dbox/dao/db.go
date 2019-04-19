@@ -6,6 +6,7 @@ import (
 	"github.com/sdvdxl/dbox/dbox/ex"
 	"github.com/sdvdxl/dbox/dbox/log"
 	"github.com/sdvdxl/dbox/dbox/model"
+	"time"
 )
 
 // global db or gorm db
@@ -39,6 +40,10 @@ func Init() {
 	DB.SetLogger(log.Logger(*log.Log))
 	DB.Debug()
 	DB.LogMode(true)
+	ex.Check(DB.DB().Ping())
+	DB.DB().SetMaxIdleConns(2)
+	DB.DB().SetMaxOpenConns(20)
+	DB.DB().SetConnMaxLifetime(time.Hour)
 
 	initSchemas()
 
@@ -63,12 +68,9 @@ func Close() {
 
 }
 
-func Transaction(session *gorm.DB) {
+func RollBackIfPanic(tx *gorm.DB) {
 	if err := recover(); err != nil {
-		ex.Check(session.Rollback().Error)
-		return
+		log.Log.Error(err)
+		tx.Rollback()
 	}
-
-	ex.Check(session.Commit().Error)
-	log.Log.Debug("commit success")
 }

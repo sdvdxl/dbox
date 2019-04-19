@@ -27,8 +27,9 @@ type (
 
 // UploadLocalFile 上传本地文件
 func UploadLocalFile(file, category string) error {
-	session := dao.DB.Begin()
-	defer dao.Transaction(session)
+	tx := dao.DB.Begin()
+	ex.Check(tx.Error)
+	defer dao.RollBackIfPanic(tx)
 
 	Log.Infow("upload file info", "file", file, "category", category)
 	stat, err := os.Stat(file)
@@ -49,6 +50,7 @@ func UploadLocalFile(file, category string) error {
 	if err != nil {
 		return ex.FileErr.Arg(err)
 	}
+	Log.Info("file:", file, ", md5:", md5Sum)
 
 	category = strings.TrimSpace(category)
 	if category == "" {
@@ -56,14 +58,22 @@ func UploadLocalFile(file, category string) error {
 		category = model.CatetoryRoot
 	}
 
-	c := categoryDao.Save(session, category)
-	existFile := fileDao.FindByMD5(session, md5Sum)
+	c := categoryDao.Save(tx, category)
+	existFile := fileDao.FindByMD5(tx, md5Sum)
 	if existFile != nil {
+		tx.Rollback()
 		return ex.FileExistErr.Arg(", file:", file)
 	}
-	fileDao.Save(session, &model.File{Name: file, CategoryID: c.ID, MD5: md5Sum, Path: category})
+	fileDao.Save(tx, &model.File{Name: file, CategoryID: c.ID, MD5: md5Sum, Path: category})
+	Log.Info("##################",tx)
 
-	return cloudService.Upload(file, category)
+	if err := cloudService.Upload(file, category); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	Log.Error("##################",tx)
+	return nil
 }
 
 func FindByCategoryID(categoryID uint) []model.File {
