@@ -15,7 +15,6 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/sdvdxl/dbox/dbox/log"
 	"github.com/sdvdxl/dbox/dbox/model"
 	"github.com/sdvdxl/dbox/dbox/service/file"
@@ -46,7 +45,7 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
-		fmt.Println(fileService.FindByFuzz(findCondition))
+		printTables(fileService.FindByFuzz(findCondition))
 	},
 }
 

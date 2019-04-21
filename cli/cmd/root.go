@@ -21,6 +21,7 @@ import (
 	"github.com/sdvdxl/dbox/dbox/dao"
 	"github.com/sdvdxl/dbox/dbox/ex"
 	"github.com/sdvdxl/dbox/dbox/log"
+	"github.com/sdvdxl/dbox/dbox/model"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -109,4 +110,38 @@ func printInitInfoAndExit() {
 	fmt.Println("OSS未配置，使用config配置")
 	ex.Check(configCmd.Help())
 	os.Exit(1)
+}
+
+func printTables(files []model.File) {
+	flen := getMaxLen(files)
+	fmt.Println(getStr("文件名", flen), "| ", getStr("PATH", flen))
+	for _, f := range files {
+		fmt.Println(getStr(f.Name, flen), "| ", getStr(f.Path, flen))
+	}
+}
+
+func getMaxLen(files []model.File) int {
+	maxLen := 0
+	for _, f := range files {
+		l := len(f.Name)
+		if l > maxLen {
+			maxLen = l
+		}
+	}
+
+	return maxLen
+}
+
+func getStr(str string, num int) string {
+	l := len(str)
+	if l >= num {
+		return str
+	}
+
+	for i := 0; i < num-l; i++ {
+		str += " "
+	}
+
+	return str
+
 }
