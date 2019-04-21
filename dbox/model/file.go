@@ -16,3 +16,8 @@ type File struct {
 	// 相对地址
 	Path string
 }
+
+type FileDTO struct {
+	Name     string
+	Category string
+}

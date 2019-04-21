@@ -12,15 +12,8 @@ import (
 
 var Log *zap.SugaredLogger
 
-var lumlog = &lumberjack.Logger{
-	Filename:   "/tmp/my-zap.log",
-	MaxSize:    10, // megabytes
-	MaxBackups: 3,  // number of log files
-	MaxAge:     3,  // days
-}
-
 func Close() {
-	if Log!=nil{
+	if Log != nil {
 		ex.Check(Log.Sync())
 	}
 }
@@ -33,7 +26,7 @@ func Init() {
 		MaxAge:     28, // days
 	})
 	core := zapcore.NewCore(
-		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
 		w,
 		zap.InfoLevel,
 	)

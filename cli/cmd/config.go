@@ -18,6 +18,7 @@ import (
 	"github.com/sdvdxl/dbox/dbox/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 )
 
 var (
@@ -31,21 +32,30 @@ var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "配置OSS",
 	Run: func(cmd *cobra.Command, args []string) {
-
+		hasParams := false
 		if endpoint != "" {
+			hasParams = true
 			config.Cfg.AliOss.Endpoint = endpoint
 		}
 
 		if accessKeyID != "" {
+			hasParams = true
 			config.Cfg.AliOss.AccessKeyID = accessKeyID
 		}
 
 		if accessKeySecret != "" {
+			hasParams = true
 			config.Cfg.AliOss.AccessKeySecret = accessKeySecret
 		}
 
 		if bucket != "" {
+			hasParams = true
 			config.Cfg.AliOss.Bucket = bucket
+		}
+
+		if !hasParams {
+			cmd.Help()
+			os.Exit(1)
 		}
 
 		config.Update()

@@ -65,17 +65,35 @@ func UploadLocalFile(file, category string) error {
 		return ex.FileExistErr.Arg(", file:", file)
 	}
 	fileDao.Save(tx, &model.File{Name: file, CategoryID: c.ID, MD5: md5Sum, Path: category})
-	Log.Info("##################",tx)
+	Log.Info("##################", tx)
 
 	if err := cloudService.Upload(file, category); err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	Log.Error("##################",tx)
+	Log.Error("##################", tx)
 	return nil
 }
 
 func FindByCategoryID(categoryID uint) []model.File {
 	return fileDao.FindByCategoryID(dao.DB, categoryID)
+}
+
+func FindByFuzz(f model.FileDTO) []model.File {
+	Log.Info(f)
+	var files []model.File
+	if f.Category != "" {
+		ex.Check(dao.DB.Table("files").Select("files.*").
+			Joins("join categories on files.category_id=categories.id").
+			Where("files.name like ? and categories.name = ?",
+				"%"+f.Name+"%", f.Category).
+			Find(&files).Error)
+
+	} else {
+		ex.Check(dao.DB.Where("name like ?", "%"+f.Name+"%").Find(&files).Error)
+	}
+
+	return files
+
 }

@@ -16,6 +16,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/sdvdxl/dbox/dbox/log"
+	"github.com/sdvdxl/dbox/dbox/model"
+	"github.com/sdvdxl/dbox/dbox/service/file"
+	"github.com/spf13/pflag"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -31,13 +36,28 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		cmd.PersistentFlags().VisitAll(func(flag *pflag.Flag) {
+			log.Log.Info(flag.Name, " ", flag.Value)
+		})
+
 		checkConfig()
-		fmt.Println("find called")
+		if findCondition.Name == "" {
+			cmd.Help()
+			os.Exit(1)
+		}
+
+		fmt.Println(fileService.FindByFuzz(findCondition))
 	},
 }
 
+var (
+	findCondition model.FileDTO
+)
+
 func init() {
 	rootCmd.AddCommand(findCmd)
+	findCmd.PersistentFlags().StringVarP(&findCondition.Category, "category", "c", "", "文件夹")
+	findCmd.PersistentFlags().StringVarP(&findCondition.Name, "file", "f", "", "* 文件名字")
 
 	// Here you will define your flags and configuration settings.
 
