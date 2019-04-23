@@ -22,6 +22,7 @@ import (
 	"github.com/sdvdxl/dbox/dbox/ex"
 	"github.com/sdvdxl/dbox/dbox/log"
 	"github.com/sdvdxl/dbox/dbox/model"
+	"github.com/sdvdxl/dbox/dbox/service/cloud"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -104,6 +105,7 @@ func checkConfig() {
 		config.Cfg.AliOss.Endpoint == "" || config.Cfg.AliOss.Bucket == "" {
 		printInitInfoAndExit()
 	}
+	cloudService.UseCloudFileManager(&cloudService.AliOssFileManager{})
 }
 
 func printInitInfoAndExit() {

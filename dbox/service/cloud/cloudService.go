@@ -2,6 +2,7 @@ package cloudService
 
 import (
 	"errors"
+	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/sdvdxl/dbox/dbox/config"
 	. "github.com/sdvdxl/dbox/dbox/log"
@@ -16,7 +17,7 @@ var (
 // CloudFileManager 文件管理
 type CloudFileManager interface {
 	// Upload 上传文件
-	Upload(file, path string) error
+	Upload(file, fileName, category string) error
 
 	// Delete 删除文件
 	Delete(path string) error
@@ -45,7 +46,7 @@ func initAliOss(aliOss model.AliOss) error {
 }
 
 // Upload 上传文件
-func (fm *AliOssFileManager) Upload(file, path string) error {
+func (fm *AliOssFileManager) Upload(file, fileName, category string) error {
 	Log.Info("oss upload file,file:", file)
 
 	bucket, err := ossClient.Bucket(config.Cfg.AliOss.Bucket)
@@ -53,7 +54,7 @@ func (fm *AliOssFileManager) Upload(file, path string) error {
 		return err
 	}
 
-	err = bucket.PutObjectFromFile(path, file)
+	err = bucket.PutObjectFromFile(category+"/"+fileName, file, oss.Progress(&OssProgressListener{}))
 	if err != nil {
 		return err
 	}
@@ -79,8 +80,8 @@ type QiNiuFileManager struct {
 }
 
 // Upload 上传文件
-func (oss *QiNiuFileManager) Upload(file, path string) error {
-	Log.Info("QiNiuFileManager upload file,path:", path)
+func (oss *QiNiuFileManager) Upload(file, fileName, category string) error {
+	Log.Info("QiNiuFileManager upload file,path:", category)
 	return nil
 }
 
@@ -107,6 +108,29 @@ func UseCloudFileManager(fm CloudFileManager) error {
 	return errors.New("not support")
 }
 
-func Upload(file, category string) error {
-	return cfm.Upload(file, category)
+func Upload(file, fileName, category string) error {
+	return cfm.Upload(file, fileName, category)
+}
+
+// 定义进度条监听器。
+type OssProgressListener struct {
+}
+
+// 定义进度变更事件处理函数。
+func (listener *OssProgressListener) ProgressChanged(event *oss.ProgressEvent) {
+	switch event.EventType {
+	case oss.TransferStartedEvent:
+		fmt.Printf("Transfer Started, ConsumedBytes: %d, TotalBytes %d.\n",
+			event.ConsumedBytes, event.TotalBytes)
+	case oss.TransferDataEvent:
+		fmt.Printf("\rTransfer Data, ConsumedBytes: %d, TotalBytes %d, %d%%.",
+			event.ConsumedBytes, event.TotalBytes, event.ConsumedBytes*100/event.TotalBytes)
+	case oss.TransferCompletedEvent:
+		fmt.Printf("\nTransfer Completed, ConsumedBytes: %d, TotalBytes %d.\n",
+			event.ConsumedBytes, event.TotalBytes)
+	case oss.TransferFailedEvent:
+		fmt.Printf("\nTransfer Failed, ConsumedBytes: %d, TotalBytes %d.\n",
+			event.ConsumedBytes, event.TotalBytes)
+	default:
+	}
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/sdvdxl/dbox/dbox/model"
 	"github.com/sdvdxl/dbox/dbox/service/cloud"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -29,7 +30,12 @@ type (
 func UploadLocalFile(file, category string) error {
 	tx := dao.DB.Begin()
 	ex.Check(tx.Error)
-	defer dao.RollBackIfPanic(tx)
+	defer func() {
+		if err := recover(); err != nil {
+			Log.Error(err)
+			tx.Rollback()
+		}
+	}()
 
 	Log.Infow("upload file info", "file", file, "category", category)
 	stat, err := os.Stat(file)
@@ -64,15 +70,16 @@ func UploadLocalFile(file, category string) error {
 		tx.Rollback()
 		return ex.FileExistErr.Arg(", file:", file)
 	}
-	fileDao.Save(tx, &model.File{Name: file, CategoryID: c.ID, MD5: md5Sum, Path: category})
-	Log.Info("##################", tx)
 
-	if err := cloudService.Upload(file, category); err != nil {
+	fileName:=filepath.Base(file)
+	fileDao.Save(tx, &model.File{Name: fileName, CategoryID: c.ID, MD5: md5Sum, Path: category})
+
+	if err := cloudService.Upload(file,fileName, category); err != nil {
 		tx.Rollback()
 		return err
 	}
 
-	Log.Error("##################", tx)
+	tx.Commit()
 	return nil
 }
 

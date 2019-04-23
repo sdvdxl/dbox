@@ -69,8 +69,5 @@ func Close() {
 }
 
 func RollBackIfPanic(tx *gorm.DB) {
-	if err := recover(); err != nil {
-		log.Log.Error(err)
-		tx.Rollback()
-	}
+
 }
