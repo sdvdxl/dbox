@@ -71,10 +71,10 @@ func UploadLocalFile(file, category string) error {
 		return ex.FileExistErr.Arg(", file:", file)
 	}
 
-	fileName:=filepath.Base(file)
+	fileName := filepath.Base(file)
 	fileDao.Save(tx, &model.File{Name: fileName, CategoryID: c.ID, MD5: md5Sum, Path: category})
 
-	if err := cloudService.Upload(file,fileName, category); err != nil {
+	if err := cloudService.Upload(file, fileName, category); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -87,20 +87,20 @@ func FindByCategoryID(categoryID uint) []model.File {
 	return fileDao.FindByCategoryID(dao.DB, categoryID)
 }
 
-func FindByFuzz(f model.FileDTO) []model.File {
+func FindByFuzz(f model.FileDTO) []model.FileDTO {
+	sess := dao.DB.Table("files").Select("files.*,categories.name as category").
+		Joins("join categories on files.category_id=categories.id")
 	Log.Info(f)
-	var files []model.File
+	var files []model.FileDTO
 	if f.Category != "" {
-		ex.Check(dao.DB.Table("files").Select("files.*").
-			Joins("join categories on files.category_id=categories.id").
-			Where("files.name like ? and categories.name = ?",
-				"%"+f.Name+"%", f.Category).
-			Find(&files).Error)
-
+		sess = sess.Where("files.name like ? and categories.name = ?",
+			"%"+f.Name+"%", f.Category)
 	} else {
-		ex.Check(dao.DB.Where("name like ?", "%"+f.Name+"%").Find(&files).Error)
+		sess = sess.Where("files.name like ? ",
+			"%"+f.Name+"%")
 	}
 
+	ex.Check(sess.Find(&files).Error)
 	return files
 
 }

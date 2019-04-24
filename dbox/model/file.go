@@ -10,6 +10,8 @@ type File struct {
 	// 目录id 和 文件是一对多关系
 	CategoryID uint
 
+	Category Category `gorm:"foreignkey:CategoryID"`
+
 	// tag
 	MD5 string
 
@@ -18,6 +20,6 @@ type File struct {
 }
 
 type FileDTO struct {
-	Name     string
+	File
 	Category string
 }

@@ -51,7 +51,7 @@ to quickly create a Cobra application.`,
 		for _, v := range fileService.FindByFuzz(findCondition) {
 			row := make([]string, 3)
 			row[0] = fmt.Sprint(v.ID)
-			row[1] = fmt.Sprint(v.CategoryID)
+			row[1] = fmt.Sprint(v.Category)
 			row[2] = fmt.Sprint(v.Name)
 			rows = append(rows, row)
 		}
