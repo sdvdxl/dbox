@@ -15,10 +15,12 @@
 package cmd
 
 import (
+	"github.com/olekukonko/tablewriter"
 	"github.com/sdvdxl/dbox/dbox/log"
 	"github.com/sdvdxl/dbox/dbox/model"
 	"github.com/sdvdxl/dbox/dbox/service/file"
 	"github.com/spf13/pflag"
+	"golang.org/x/exp/errors/fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -45,7 +47,24 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
-		printTables(fileService.FindByFuzz(findCondition))
+		rows := make([][]string, 0, 0)
+		for _, v := range fileService.FindByFuzz(findCondition) {
+			row := make([]string, 3)
+			row[0] = fmt.Sprint(v.ID)
+			row[1] = fmt.Sprint(v.CategoryID)
+			row[2] = fmt.Sprint(v.Name)
+			rows = append(rows, row)
+		}
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"文件序号ID", "文件夹", "文件名"})
+		//table.SetFooter([]string{"", "", "Total", "$146.93"}) // Add Footer
+		table.SetBorder(false) // Set Border to false
+		table.SetAutoWrapText(false)
+		table.AppendBulk(rows) // Add Bulk Data
+		//table.SetFooter()
+		table.Render()
+		fmt.Println()
 	},
 }
 
