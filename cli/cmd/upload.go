@@ -55,7 +55,7 @@ to quickly create a Cobra application.`,
 			}
 		}
 
-		if err := fileService.UploadLocalFile(file, category); err != nil {
+		if err := fileService.UploadLocalFile(file,fileName, category); err != nil {
 			fmt.Println(err)
 			log.Log.Error("upload file error:", err, "file:", file, "category:", category)
 			os.Exit(1)

@@ -27,7 +27,7 @@ type (
 )
 
 // UploadLocalFile 上传本地文件
-func UploadLocalFile(file, category string) error {
+func UploadLocalFile(file, fileName, category string) error {
 	tx := dao.DB.Begin()
 	ex.Check(tx.Error)
 	defer func() {
@@ -71,7 +71,9 @@ func UploadLocalFile(file, category string) error {
 		return ex.FileExistErr.Arg(", file:", file)
 	}
 
-	fileName := filepath.Base(file)
+	if fileName == "" {
+		fileName = filepath.Base(file)
+	}
 	fileDao.Save(tx, &model.File{Name: fileName, CategoryID: c.ID, MD5: md5Sum, Path: category})
 
 	if err := cloudService.Upload(file, fileName, category); err != nil {
