@@ -16,34 +16,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/mitchellh/go-homedir"
 	"github.com/sdvdxl/dbox/api/config"
 	"github.com/sdvdxl/dbox/api/dao"
 	"github.com/sdvdxl/dbox/api/ex"
 	"github.com/sdvdxl/dbox/api/log"
-	"github.com/sdvdxl/dbox/api/model"
 	"github.com/sdvdxl/dbox/api/service"
 	"github.com/spf13/cobra"
 	"os"
-)
-
-const (
-	cfgPath       = string(os.PathSeparator) + ".dbox"
-	cfgFile       = cfgPath + string(os.PathSeparator) + "cfg.yml"
-	configContent = `
-# 更改文件名为 cfg.yml
-# 阿里云OSS配置
-cloud:
-  #  use: "aliOss"
-  aliOss:
-    endpoint: ""
-    accessKeyID: ""
-    accessKeySecret: ""
-    bucket: ""
-
-# 默认文件夹
-defaultFoler: "默认"
-`
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -68,19 +47,14 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	h, err := homedir.Dir()
-	ex.Check(err)
-
-	if err = os.Mkdir(h+cfgPath, 0766); err != nil && !os.IsExist(err) {
+	if err := os.Mkdir(config.GetBasePath(), 0766); err != nil && !os.IsExist(err) {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 
-	f := h + cfgFile
-
-	if fi, err := os.Stat(f); os.IsNotExist(err) {
-		file, _ := os.Create(f)
-		_, err = file.WriteString(configContent)
+	if fi, err := os.Stat(config.GetConfigFile()); os.IsNotExist(err) {
+		file, _ := os.Create(config.GetConfigFile())
+		_, err = file.WriteString(config.Content)
 		ex.Check(err)
 		ex.Check(file.Close())
 
@@ -92,10 +66,10 @@ func initConfig() {
 		printInitInfoAndExit()
 	}
 
-	ex.Check(config.Parse(f))
-	config.Cfg.LogFile = h + cfgPath + string(os.PathSeparator) + "dbox.log"
+	ex.Check(config.Parse(config.GetConfigFile()))
+
 	log.Init()
-	config.Cfg.MetaDB = h + cfgPath + string(os.PathSeparator) + "meta.db"
+
 	dao.Init()
 }
 
@@ -111,38 +85,4 @@ func printInitInfoAndExit() {
 	fmt.Println("OSS未配置，使用config配置")
 	ex.Check(configCmd.Help())
 	os.Exit(1)
-}
-
-func printTables(files []model.File) {
-	flen := getMaxLen(files)
-	fmt.Println(getStr("文件名", flen), "| ", getStr("PATH", flen))
-	for _, f := range files {
-		fmt.Println(getStr(f.Name, flen), "| ", getStr(f.Path, flen))
-	}
-}
-
-func getMaxLen(files []model.File) int {
-	maxLen := 0
-	for _, f := range files {
-		l := len(f.Name)
-		if l > maxLen {
-			maxLen = l
-		}
-	}
-
-	return maxLen
-}
-
-func getStr(str string, num int) string {
-	l := len(str)
-	if l >= num {
-		return str
-	}
-
-	for i := 0; i < num-l; i++ {
-		str += " "
-	}
-
-	return str
-
 }

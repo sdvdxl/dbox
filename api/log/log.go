@@ -20,7 +20,7 @@ func Close() {
 
 func Init() {
 	w := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   config.Cfg.LogFile,
+		Filename:   config.GetBasePath() + "dbox.log",
 		MaxSize:    500, // megabytes
 		MaxBackups: 3,
 		MaxAge:     28, // days

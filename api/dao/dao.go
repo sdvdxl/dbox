@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/sdvdxl/dbox/api/config"
 	"github.com/sdvdxl/dbox/api/ex"
 	"github.com/sdvdxl/dbox/api/log"
 	"github.com/sdvdxl/dbox/api/model"
@@ -20,7 +21,7 @@ func NewDB() *gorm.DB {
 
 func Init() {
 	var err error
-	DB, err = gorm.Open("sqlite3")
+	DB, err = gorm.Open("sqlite3", config.GetDBFile())
 	if err != nil {
 		panic("failed to connect database, error msg:" + err.Error())
 	}
