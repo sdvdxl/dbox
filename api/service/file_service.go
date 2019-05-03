@@ -1,39 +1,29 @@
-package fileService
+package service
 
 import (
 	"github.com/gohugoio/hugo/helpers"
 	"github.com/sdvdxl/dbox/api/dao"
-	"github.com/sdvdxl/dbox/api/dao/categoryDao"
-	"github.com/sdvdxl/dbox/api/dao/fileDao"
 	"github.com/sdvdxl/dbox/api/ex"
 	. "github.com/sdvdxl/dbox/api/log"
 	"github.com/sdvdxl/dbox/api/model"
-	cloudService "github.com/sdvdxl/dbox/api/service/cloud"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-type (
-	FileService interface {
-		// UploadLocalFile 上传文件
-		UploadLocalFile(file, category string) error
-		// FindByCategory  根据目录查找文件
-		FindByCategory(categoryID uint) []model.File
-
-		// FindByName 根据文件名字模糊搜索
-		FindByNameFuzz(name string) []model.File
-	}
-)
+type FileService struct {
+}
 
 // UploadLocalFile 上传本地文件
-func UploadLocalFile(file, fileName, category string) error {
-	tx := dao.DB.Begin()
-	ex.Check(tx.Error)
+func (s *FileService) UploadLocalFile(file, fileName, category string) error {
+	db := dao.NewDB()
+	fileDao := &dao.FileDao{DB: db}
+	categoryDao := &dao.CategoryDao{DB: db}
+
 	defer func() {
 		if err := recover(); err != nil {
 			Log.Error(err)
-			tx.Rollback()
+			db.Rollback()
 		}
 	}()
 
@@ -64,32 +54,32 @@ func UploadLocalFile(file, fileName, category string) error {
 		category = model.CatetoryRoot
 	}
 
-	c := categoryDao.Save(tx, category)
-	existFile := fileDao.FindByMD5(tx, md5Sum)
+	c := categoryDao.Save(category)
+	existFile := fileDao.FindByMD5(md5Sum)
 	if existFile != nil {
-		tx.Rollback()
+		db.Rollback()
 		return ex.FileExistErr.Arg(", file:", file)
 	}
 
 	if fileName == "" {
 		fileName = filepath.Base(file)
 	}
-	fileDao.Save(tx, &model.File{Name: fileName, CategoryID: c.ID, MD5: md5Sum, Path: category})
+	fileDao.Save(&model.File{Name: fileName, CategoryID: c.ID, MD5: md5Sum, Path: category})
 
-	if err := cloudService.Upload(file, fileName, category); err != nil {
-		tx.Rollback()
+	if err := Upload(file, fileName, category); err != nil {
+		db.Rollback()
 		return err
 	}
 
-	tx.Commit()
+	ex.Check(db.Commit().Error)
 	return nil
 }
 
-func FindByCategoryID(categoryID uint) []model.File {
-	return fileDao.FindByCategoryID(dao.DB, categoryID)
+func (s *FileService) FindByCategoryID(categoryID uint) []model.File {
+	return fileDao().FindByCategoryID(dao.DB, categoryID)
 }
 
-func FindByFuzz(f model.FileDTO) []model.FileDTO {
+func (s *FileService) FindByFuzz(f model.FileDTO) []model.FileDTO {
 	sess := dao.DB.Table("files").Select("files.*,categories.name as category").
 		Joins("join categories on files.category_id=categories.id")
 	Log.Info(f)
@@ -105,4 +95,8 @@ func FindByFuzz(f model.FileDTO) []model.FileDTO {
 	ex.Check(sess.Find(&files).Error)
 	return files
 
+}
+
+func fileDao() *dao.FileDao {
+	return &dao.FileDao{DB: dao.NewDB()}
 }

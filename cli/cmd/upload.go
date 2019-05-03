@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"github.com/sdvdxl/dbox/api/ex"
 	"github.com/sdvdxl/dbox/api/log"
-	"github.com/sdvdxl/dbox/api/service/file"
+	"github.com/sdvdxl/dbox/api/service"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -55,7 +55,8 @@ to quickly create a Cobra application.`,
 			}
 		}
 
-		if err := fileService.UploadLocalFile(file,fileName, category); err != nil {
+		fileService := &service.FileService{}
+		if err := fileService.UploadLocalFile(file, fileName, category); err != nil {
 			fmt.Println(err)
 			log.Log.Error("upload file error:", err, "file:", file, "category:", category)
 			os.Exit(1)

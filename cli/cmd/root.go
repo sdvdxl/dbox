@@ -22,7 +22,7 @@ import (
 	"github.com/sdvdxl/dbox/api/ex"
 	"github.com/sdvdxl/dbox/api/log"
 	"github.com/sdvdxl/dbox/api/model"
-	"github.com/sdvdxl/dbox/api/service/cloud"
+	"github.com/sdvdxl/dbox/api/service"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -96,7 +96,6 @@ func initConfig() {
 	config.Cfg.LogFile = h + cfgPath + string(os.PathSeparator) + "dbox.log"
 	log.Init()
 	config.Cfg.MetaDB = h + cfgPath + string(os.PathSeparator) + "meta.db"
-	dao.Use(dao.DialectSqlite3, "meta.db")
 	dao.Init()
 }
 
@@ -105,7 +104,7 @@ func checkConfig() {
 		config.Cfg.AliOss.Endpoint == "" || config.Cfg.AliOss.Bucket == "" {
 		printInitInfoAndExit()
 	}
-	cloudService.UseCloudFileManager(&cloudService.AliOssFileManager{})
+	service.UseCloudFileManager(&service.AliOssFileManager{})
 }
 
 func printInitInfoAndExit() {

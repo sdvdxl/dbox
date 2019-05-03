@@ -1,4 +1,4 @@
-package cloudService
+package service
 
 import (
 	"errors"

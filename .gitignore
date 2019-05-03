@@ -85,3 +85,4 @@ modules.xml
 
 meta.db
 cfg.ymlcli
+cli/cli

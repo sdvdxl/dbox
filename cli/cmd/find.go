@@ -18,7 +18,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/sdvdxl/dbox/api/log"
 	"github.com/sdvdxl/dbox/api/model"
-	"github.com/sdvdxl/dbox/api/service/file"
+	"github.com/sdvdxl/dbox/api/service"
 	"github.com/spf13/pflag"
 	"golang.org/x/exp/errors/fmt"
 	"os"
@@ -47,6 +47,7 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
+		fileService:=&service.FileService{}
 		rows := make([][]string, 0, 0)
 		for _, v := range fileService.FindByFuzz(findCondition) {
 			row := make([]string, 3)

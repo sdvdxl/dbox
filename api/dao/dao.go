@@ -11,28 +11,16 @@ import (
 
 // global db or gorm db
 var (
-	DB        *gorm.DB
-	dbDialect dbType
-	dbArgs    []interface{}
+	DB *gorm.DB
 )
 
-type dbType string
-
-const (
-	// DialectSqlite3 sqlite3
-	DialectSqlite3 = dbType("sqlite3")
-	// DialectMysql mysql
-	DialectMysql = dbType("mysql")
-)
-
-func Use(dialect dbType, args ...interface{}) {
-	dbDialect = dialect
-	dbArgs = args
+func NewDB() *gorm.DB {
+	return DB.Begin()
 }
 
 func Init() {
 	var err error
-	DB, err = gorm.Open(string(dbDialect), dbArgs...)
+	DB, err = gorm.Open("sqlite3")
 	if err != nil {
 		panic("failed to connect database, error msg:" + err.Error())
 	}
@@ -47,7 +35,7 @@ func Init() {
 
 	initSchemas()
 
-	log.Log.Info(dbDialect, "db init success")
+	log.Log.Info("db init success")
 
 }
 
