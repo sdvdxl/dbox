@@ -80,21 +80,7 @@ func (s *FileService) FindByCategoryID(categoryID uint) []model.File {
 }
 
 func (s *FileService) FindByFuzz(f model.FileDTO) []model.FileDTO {
-	sess := dao.DB.Table("files").Select("files.*,categories.name as category").
-		Joins("join categories on files.category_id=categories.id")
-	Log.Info(f)
-	var files []model.FileDTO
-	if f.Category != "" {
-		sess = sess.Where("files.name like ? and categories.name = ?",
-			"%"+f.Name+"%", f.Category)
-	} else {
-		sess = sess.Where("files.name like ? ",
-			"%"+f.Name+"%")
-	}
-
-	ex.Check(sess.Find(&files).Error)
-	return files
-
+	return fileDao().FindByFuzz(f)
 }
 
 func fileDao() *dao.FileDao {

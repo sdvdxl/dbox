@@ -7,6 +7,7 @@ import (
 	"github.com/sdvdxl/dbox/api/ex"
 	"github.com/sdvdxl/dbox/api/log"
 	"github.com/sdvdxl/dbox/api/model"
+	"strings"
 	"time"
 )
 
@@ -57,6 +58,10 @@ func Close() {
 
 }
 
-func RollBackIfPanic(tx *gorm.DB) {
+func RollBackIfPanic(db *gorm.DB) {
+	ex.Check(db.Rollback().Error)
+}
 
+func EscapeLike(colVal string)  string{
+	return strings.Replace(strings.Replace(colVal,"%","\\%",-1),"_","\\_",-1)
 }

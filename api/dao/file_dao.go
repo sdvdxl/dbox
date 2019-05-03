@@ -35,3 +35,21 @@ func (dao *FileDao) FindByMD5(md5 string) *model.File {
 
 	return &file
 }
+
+func (dao *FileDao) FindByFuzz(f model.FileDTO) []model.FileDTO {
+	sess := dao.DB.Table("files").Select("files.*,categories.name as category").
+		Joins("join categories on files.category_id=categories.id")
+	log.Log.Info(f)
+	var files []model.FileDTO
+	name := EscapeLike(f.Name)
+	if f.Category != "" {
+		sess = sess.Where("files.name like ? and categories.name = ?",
+			"%"+name+"%", f.Category)
+	} else {
+		sess = sess.Where("files.name like ?  ESCAPE '\\'",
+			"%"+name+"%")
+	}
+
+	ex.Check(sess.Find(&files).Error)
+	return files
+}
