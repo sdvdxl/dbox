@@ -17,12 +17,12 @@ package cmd
 import (
 	"fmt"
 	"github.com/mitchellh/go-homedir"
-	"github.com/sdvdxl/dbox/dbox/config"
-	"github.com/sdvdxl/dbox/dbox/dao"
-	"github.com/sdvdxl/dbox/dbox/ex"
-	"github.com/sdvdxl/dbox/dbox/log"
-	"github.com/sdvdxl/dbox/dbox/model"
-	"github.com/sdvdxl/dbox/dbox/service/cloud"
+	"github.com/sdvdxl/dbox/api/config"
+	"github.com/sdvdxl/dbox/api/dao"
+	"github.com/sdvdxl/dbox/api/ex"
+	"github.com/sdvdxl/dbox/api/log"
+	"github.com/sdvdxl/dbox/api/model"
+	"github.com/sdvdxl/dbox/api/service/cloud"
 	"github.com/spf13/cobra"
 	"os"
 )

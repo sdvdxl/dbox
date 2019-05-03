@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/sdvdxl/dbox/dbox/config"
-	. "github.com/sdvdxl/dbox/dbox/log"
-	"github.com/sdvdxl/dbox/dbox/model"
+	"github.com/sdvdxl/dbox/api/config"
+	. "github.com/sdvdxl/dbox/api/log"
+	"github.com/sdvdxl/dbox/api/model"
 )
 
 var (

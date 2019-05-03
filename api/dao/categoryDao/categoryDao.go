@@ -2,9 +2,9 @@ package categoryDao
 
 import (
 	"github.com/jinzhu/gorm"
-	. "github.com/sdvdxl/dbox/dbox/dao"
-	"github.com/sdvdxl/dbox/dbox/ex"
-	"github.com/sdvdxl/dbox/dbox/model"
+	. "github.com/sdvdxl/dbox/api/dao"
+	"github.com/sdvdxl/dbox/api/ex"
+	"github.com/sdvdxl/dbox/api/model"
 )
 
 func Save(session *gorm.DB, name string) *model.Category {

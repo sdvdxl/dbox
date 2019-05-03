@@ -1,9 +1,9 @@
 package category
 
 import (
-	"github.com/sdvdxl/dbox/dbox/dao"
-	"github.com/sdvdxl/dbox/dbox/dao/categoryDao"
-	"github.com/sdvdxl/dbox/dbox/model"
+	"github.com/sdvdxl/dbox/api/dao"
+	"github.com/sdvdxl/dbox/api/dao/categoryDao"
+	"github.com/sdvdxl/dbox/api/model"
 )
 
 func FindAll() []model.Category {

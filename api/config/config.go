@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/sdvdxl/dbox/dbox/ex"
-	"github.com/sdvdxl/dbox/dbox/model"
+	"github.com/sdvdxl/dbox/api/ex"
+	"github.com/sdvdxl/dbox/api/model"
 	"github.com/spf13/viper"
 )
 

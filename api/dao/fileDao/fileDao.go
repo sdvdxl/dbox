@@ -2,9 +2,9 @@ package fileDao
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/sdvdxl/dbox/dbox/ex"
-	"github.com/sdvdxl/dbox/dbox/log"
-	"github.com/sdvdxl/dbox/dbox/model"
+	"github.com/sdvdxl/dbox/api/ex"
+	"github.com/sdvdxl/dbox/api/log"
+	"github.com/sdvdxl/dbox/api/model"
 )
 
 func Save(session *gorm.DB, file *model.File) {

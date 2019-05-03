@@ -2,8 +2,8 @@ package log
 
 import (
 	"fmt"
-	"github.com/sdvdxl/dbox/dbox/config"
-	"github.com/sdvdxl/dbox/dbox/ex"
+	"github.com/sdvdxl/dbox/api/config"
+	"github.com/sdvdxl/dbox/api/ex"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"

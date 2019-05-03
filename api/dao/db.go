@@ -3,9 +3,9 @@ package dao
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/sdvdxl/dbox/dbox/ex"
-	"github.com/sdvdxl/dbox/dbox/log"
-	"github.com/sdvdxl/dbox/dbox/model"
+	"github.com/sdvdxl/dbox/api/ex"
+	"github.com/sdvdxl/dbox/api/log"
+	"github.com/sdvdxl/dbox/api/model"
 	"time"
 )
 
