@@ -53,3 +53,13 @@ func (dao *FileDao) FindByFuzz(f model.FileDTO) []model.FileDTO {
 	ex.Check(sess.Find(&files).Error)
 	return files
 }
+
+func (dao *FileDao) FindByName(name string) *model.File {
+	var file model.File
+	err := dao.DB.Table("files").Where("name = ?", name).Find(&file).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil
+	}
+	ex.Check(err)
+	return &file
+}

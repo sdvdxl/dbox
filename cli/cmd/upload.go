@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"github.com/sdvdxl/dbox/api/ex"
 	"github.com/sdvdxl/dbox/api/log"
+	"github.com/sdvdxl/dbox/api/model"
 	"github.com/sdvdxl/dbox/api/service"
 	"github.com/spf13/cobra"
 	"os"
@@ -56,7 +57,15 @@ to quickly create a Cobra application.`,
 		}
 
 		fileService := &service.FileService{}
-		if err := fileService.UploadLocalFile(file, fileName, category); err != nil {
+		if f, err := fileService.UploadLocalFile(file, fileName, category); err != nil {
+			if _, ok := err.(ex.FileExist); ok {
+				fmt.Println("file already exist")
+				fDTO:=model.FileDTO{}
+				fDTO.Name =f.Name
+				printTables(fileService.FindByFuzz(fDTO))
+				os.Exit(1)
+			}
+
 			fmt.Println(err)
 			log.Log.Error("upload file error:", err, "file:", file, "category:", category)
 			os.Exit(1)
