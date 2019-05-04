@@ -63,3 +63,9 @@ func (dao *FileDao) FindByName(name string) *model.File {
 	ex.Check(err)
 	return &file
 }
+
+func (dao *FileDao) FindByID(id int) *model.File {
+	var file model.File
+	ex.Check(dao.DB.Table("files").Where("id=?", id).Find(&file).Error)
+	return &file
+}

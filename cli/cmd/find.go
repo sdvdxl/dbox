@@ -31,7 +31,7 @@ var findCmd = &cobra.Command{
 	Use:   "find",
 	Short: "search files",
 	Args:  cobra.MinimumNArgs(1),
-	
+
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.PersistentFlags().VisitAll(func(flag *pflag.Flag) {
 			log.Log.Info(flag.Name, " ", flag.Value)
@@ -58,7 +58,7 @@ func printTables(files []model.FileDTO) {
 		rows = append(rows, row)
 	}
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"文件序号ID", "文件夹", "文件名"})
+	table.SetHeader([]string{"File ID", "Category", "File Name"})
 	//table.SetFooter([]string{"", "", "Total", "$146.93"}) // Add Footer
 	table.SetBorder(false)
 	// Set Border to false

@@ -30,28 +30,20 @@ var (
 	fileName string
 )
 
-// uploadCmd represents the upload command
-var uploadCmd = &cobra.Command{
-	Use:   "upload",
-	Short: "上传文件",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+// putCmd represents the upload command
+var putCmd = &cobra.Command{
+	Use:   "put",
+	Short: "upload file to cloud",
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		checkConfig()
-		if file == "" {
-			fmt.Println("请填写文件名")
-			ex.Check(cmd.Help())
-			os.Exit(1)
-		} else if f, err := os.Stat(file); err != nil {
+		file = args[0]
+		if f, err := os.Stat(file); err != nil {
 			fmt.Println(err.Error() + ": " + file)
 			os.Exit(1)
 		} else {
 			if f.IsDir() {
-				fmt.Println("不能是文件夹")
+				fmt.Println("can not be folder")
 				os.Exit(1)
 			}
 		}
@@ -60,8 +52,8 @@ to quickly create a Cobra application.`,
 		if f, err := fileService.UploadLocalFile(file, fileName, category); err != nil {
 			if _, ok := err.(ex.FileExist); ok {
 				fmt.Println("file already exist")
-				fDTO:=model.FileDTO{}
-				fDTO.Name =f.Name
+				fDTO := model.FileDTO{}
+				fDTO.Name = f.Name
 				printTables(fileService.FindByFuzz(fDTO))
 				os.Exit(1)
 			}
@@ -74,18 +66,16 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(uploadCmd)
-	uploadCmd.PersistentFlags().StringVarP(&file, "file", "f", "", "* 文件路径（不能是文件夹）")
-
-	uploadCmd.PersistentFlags().StringVarP(&category, "category", "c", "default", "文件夹")
-	uploadCmd.PersistentFlags().StringVarP(&fileName, "name", "n", "", "文件名")
+	rootCmd.AddCommand(putCmd)
+	putCmd.PersistentFlags().StringVarP(&category, "category", "c", "default", "文件夹")
+	putCmd.PersistentFlags().StringVarP(&fileName, "filename", "f", "", "file name")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// uploadCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// putCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// uploadCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// putCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

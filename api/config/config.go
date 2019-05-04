@@ -65,3 +65,10 @@ func GetBasePath() string {
 	ex.Check(err)
 	return h + cfgPath + string(os.PathSeparator)
 }
+
+// GetHomeDir 获取配置路径，最后带目录分隔符
+func GetHomeDir() string {
+	h, err := homedir.Dir()
+	ex.Check(err)
+	return h + string(os.PathSeparator)
+}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gohugoio/hugo/helpers"
+	"github.com/sdvdxl/dbox/api/config"
 	"github.com/sdvdxl/dbox/api/dao"
 	"github.com/sdvdxl/dbox/api/ex"
 	. "github.com/sdvdxl/dbox/api/log"
@@ -89,6 +90,30 @@ func (s *FileService) FindByCategoryID(categoryID uint) []model.File {
 
 func (s *FileService) FindByFuzz(f model.FileDTO) []model.FileDTO {
 	return fileDao().FindByFuzz(f)
+}
+
+func (s *FileService) Download(id int, folder, filename string) (string, error) {
+	file := fileDao().FindByID(id)
+	if filename == "" {
+		filename = file.Name
+	}
+
+	if folder == "" {
+		folder = config.GetHomeDir()
+	}
+
+	fpath := filepath.Clean(folder) + string(filepath.Separator) + filename
+	if file == nil {
+		return fpath, ex.FileNotExistErr
+	}
+
+	_, err := os.Stat(fpath)
+
+	if err == nil {
+		return fpath, ex.FileExistErr
+	}
+
+	return fpath, cfm.Download((*file).Path, fpath)
 }
 
 func fileDao() *dao.FileDao {

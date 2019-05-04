@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/sdvdxl/dbox/api/config"
+	"github.com/sdvdxl/dbox/api/ex"
 	. "github.com/sdvdxl/dbox/api/log"
 	"github.com/sdvdxl/dbox/api/model"
 )
@@ -21,6 +22,9 @@ type CloudFileManager interface {
 
 	// Delete 删除文件
 	Delete(path string) error
+
+	// Download 删除文件
+	Download(path, filename string) error
 
 	// Move 移动文件，重命名文件
 	Move(oldPath, newPath string) error
@@ -64,6 +68,14 @@ func (fm *AliOssFileManager) Upload(file, fileName, category string) error {
 func (fm *AliOssFileManager) Delete(path string) error {
 	Log.Info("oss upload file,path:", path)
 	return nil
+}
+
+func (fm *AliOssFileManager) Download(path, filename string) error {
+	Log.Info("oss upload file,path:", path)
+	bucket, err := ossClient.Bucket(config.Cfg.AliOss.Bucket)
+	ex.Check(err)
+	return bucket.GetObjectToFile(path, filename, oss.Progress(&OssProgressListener{}))
+
 }
 
 func (fm *AliOssFileManager) Move(path, p string) error {
