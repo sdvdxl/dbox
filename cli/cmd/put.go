@@ -34,6 +34,7 @@ var (
 var putCmd = &cobra.Command{
 	Use:   "put",
 	Short: "upload file to cloud",
+	Example:"put beauty.jpg -c Pictures",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		checkConfig()
