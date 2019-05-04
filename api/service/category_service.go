@@ -5,11 +5,14 @@ import (
 	"github.com/sdvdxl/dbox/api/model"
 )
 
-func FindAll() []model.Category {
+type Category struct {
+}
+
+func (*Category) FindAll() []model.Category {
 	return categoryDao().FindAll()
 }
 
-func CreateCategory(name string) *model.Category {
+func (*Category) CreateCategory(name string) *model.Category {
 	return categoryDao().CreateCategory(name)
 }
 
