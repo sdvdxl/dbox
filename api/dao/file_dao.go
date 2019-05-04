@@ -5,6 +5,7 @@ import (
 	"github.com/sdvdxl/dbox/api/ex"
 	"github.com/sdvdxl/dbox/api/log"
 	"github.com/sdvdxl/dbox/api/model"
+	"strings"
 )
 
 type FileDao struct {
@@ -41,12 +42,16 @@ func (dao *FileDao) FindByFuzz(f model.FileDTO) []model.FileDTO {
 		Joins("join categories on files.category_id=categories.id")
 	log.Log.Info(f)
 	var files []model.FileDTO
-	name := EscapeLike(f.Name)
+	name := strings.ToUpper(EscapeLike(f.Name))
+	if name == "" {
+		name = "%"
+	}
+
 	if f.Category != "" {
-		sess = sess.Where("files.name like ? and categories.name = ?",
-			"%"+name+"%", f.Category)
+		sess = sess.Where("UPPER(files.name) like ? and UPPER(categories.name) = ?",
+			"%"+name+"%", strings.ToUpper(f.Category))
 	} else {
-		sess = sess.Where("files.name like ?  ESCAPE '\\'",
+		sess = sess.Where("UPPER(files.name) like ?  ESCAPE '\\'",
 			"%"+name+"%")
 	}
 

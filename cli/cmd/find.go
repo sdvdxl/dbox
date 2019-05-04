@@ -16,10 +16,8 @@ package cmd
 
 import (
 	"github.com/olekukonko/tablewriter"
-	"github.com/sdvdxl/dbox/api/log"
 	"github.com/sdvdxl/dbox/api/model"
 	"github.com/sdvdxl/dbox/api/service"
-	"github.com/spf13/pflag"
 	"golang.org/x/exp/errors/fmt"
 	"os"
 
@@ -30,17 +28,11 @@ import (
 var findCmd = &cobra.Command{
 	Use:   "find",
 	Short: "search files",
-	Args:  cobra.MinimumNArgs(1),
-
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.PersistentFlags().VisitAll(func(flag *pflag.Flag) {
-			log.Log.Info(flag.Name, " ", flag.Value)
-			log.Log.Info("args", args)
-		})
-
 		checkConfig()
-		findCondition.Name = args[0]
-
+		if len(args) > 0 {
+			findCondition.Name = args[0]
+		}
 		fileService := &service.FileService{}
 
 		files := fileService.FindByFuzz(findCondition)
