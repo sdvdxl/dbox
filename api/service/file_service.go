@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/getlantern/errors"
 	"github.com/gohugoio/hugo/helpers"
 	"github.com/sdvdxl/dbox/api/config"
 	"github.com/sdvdxl/dbox/api/dao"
@@ -74,7 +75,7 @@ func (s *FileService) UploadLocalFile(file, fileName, category string) (*model.F
 
 	fileDao.Save(&model.File{Name: fileName, CategoryID: c.ID, MD5: md5Sum, Path: category})
 
-	if err := Upload(file, fileName, category); err != nil {
+	if err := cfm.Upload(file, fileName, category); err != nil {
 		db.Rollback()
 		return nil, err
 	}
@@ -114,6 +115,25 @@ func (s *FileService) Download(id int, folder, filename string) (string, error) 
 	}
 
 	return fpath, cfm.Download((*file).Path, fpath)
+}
+
+func (s *FileService) SyncDBFile(command string) error {
+	switch command {
+	case "upload":
+		_, err := os.Stat(config.GetDBFile())
+		if os.IsNotExist(err) {
+			return ex.FileNotExistErr
+		}
+
+		return cfm.Upload(config.GetDBFile(), "meta.db", "meta")
+	case "download":
+		return cfm.Download("meta/meta.db", config.GetDBFile())
+	case "merge":
+		return nil
+	default:
+		return errors.New("command not support, available is : upload, download or merge")
+	}
+
 }
 
 func fileDao() *dao.FileDao {

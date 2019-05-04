@@ -16,17 +16,35 @@ package cmd
 
 import (
 	"fmt"
-
+	"github.com/sdvdxl/dbox/api/service"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 // syncCmd represents the sync command
 var syncCmd = &cobra.Command{
 	Use:   "sync",
 	Short: "sync db file between local and cloud",
-	Long: `upload local db file to cloud, or download db file from cloud to local`,
+	Long: `upload local db file to cloud, or download db file from cloud to local
+available arg is one of upload, download, merge. 
+`,
+	ValidArgs: []string{"upload", "download", "merge"},
+	Example:   "sync upload",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("sync called")
+		if len(args) == 0 ||
+			(args[0] != "upload" &&
+				args[0] != "download" &&
+				args[0] != "merge") {
+			fmt.Println("args must be upload, download or merge")
+			os.Exit(1)
+		}
+
+		checkConfig()
+
+		fileService := &service.FileService{}
+		if err := fileService.SyncDBFile(args[0]); err != nil {
+			fmt.Println(err)
+		}
 	},
 }
 

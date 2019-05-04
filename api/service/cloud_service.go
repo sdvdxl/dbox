@@ -120,11 +120,7 @@ func UseCloudFileManager(fm CloudFileManager) error {
 	return errors.New("not support")
 }
 
-func Upload(file, fileName, category string) error {
-	return cfm.Upload(file, fileName, category)
-}
-
-// 定义进度条监听器。
+// OssProgressListener 定义进度条监听器。
 type OssProgressListener struct {
 }
 
