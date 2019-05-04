@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/getlantern/errors"
 	"github.com/gohugoio/hugo/helpers"
 	"github.com/sdvdxl/dbox/api/config"
@@ -30,6 +31,7 @@ func (s *FileService) UploadLocalFile(file, fileName, category string) (*model.F
 	}()
 
 	Log.Infow("upload file info", "file", file, "category", category)
+
 	stat, err := os.Stat(file)
 	if err != nil {
 		return nil, ex.FileNotExistErr.Arg(", file:", file)
@@ -40,15 +42,17 @@ func (s *FileService) UploadLocalFile(file, fileName, category string) (*model.F
 	}
 
 	f, err := os.Open(file)
+	defer f.Close()
 	if err != nil {
 		return nil, ex.FileErr.Arg(err)
 	}
-
+	fmt.Println("file:", file, ", start to calc md5...")
 	md5Sum, err := helpers.MD5FromFile(f)
 	if err != nil {
 		return nil, ex.FileErr.Arg(err)
 	}
-	Log.Info("file:", file, ", md5:", md5Sum)
+
+	fmt.Println("file:", file, ", md5:", md5Sum)
 
 	category = strings.TrimSpace(category)
 	if category == "" {
@@ -60,7 +64,7 @@ func (s *FileService) UploadLocalFile(file, fileName, category string) (*model.F
 	existFile := fileDao.FindByMD5(md5Sum)
 	if existFile != nil {
 		db.Rollback()
-		return existFile, ex.FileExistErr.Arg(", file:", file)
+		return existFile, ex.FileExistErr
 	}
 
 	if fileName == "" {
@@ -70,11 +74,12 @@ func (s *FileService) UploadLocalFile(file, fileName, category string) (*model.F
 	existFile = fileDao.FindByName(fileName)
 	if existFile != nil {
 		db.Rollback()
-		return existFile, ex.FileExistErr.Arg(", file:", file)
+		return existFile, ex.FileExistErr
 	}
 
 	fileDao.Save(&model.File{Name: fileName, CategoryID: c.ID, MD5: md5Sum, Path: category})
 
+	fmt.Println("start to upload file to cloud, file:", file)
 	if err := cfm.Upload(file, fileName, category); err != nil {
 		db.Rollback()
 		return nil, err
