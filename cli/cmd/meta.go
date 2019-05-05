@@ -21,12 +21,12 @@ import (
 	"os"
 )
 
-// syncCmd represents the sync command
-var syncCmd = &cobra.Command{
-	Use:   "sync",
+// metaCmd represents the sync command
+var metaCmd = &cobra.Command{
+	Use:   "meta",
 	Short: "sync db file between local and cloud",
 	Long: `upload local db file to cloud, or download db file from cloud to local
-available arg is one of upload, download, merge. 
+available arg is one of upload, download, merge.
 `,
 	ValidArgs: []string{"upload", "download", "merge"},
 	Example:   "sync upload",
@@ -49,5 +49,5 @@ available arg is one of upload, download, merge.
 }
 
 func init() {
-	rootCmd.AddCommand(syncCmd)
+	rootCmd.AddCommand(metaCmd)
 }
